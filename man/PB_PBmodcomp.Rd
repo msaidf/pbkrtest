@@ -1,13 +1,10 @@
 \name{PBmodcomp}
 \alias{PBmodcomp}
-\alias{PBmodcomp.lm}
 \alias{PBmodcomp.mer}
-\alias{PBmodcomp.merMod}
-\alias{getLRT}
-\alias{getLRT.lm}
-\alias{getLRT.mer}
-\alias{getLRT.merMod}
-
+%\alias{BCmodcomp}
+%\alias{BCmodcomp.mer}
+\alias{makePBcluster}
+\alias{stopPBcluster}
 \alias{plot.XXmodcomp}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -18,10 +15,12 @@
   Model comparison of mixed models using parametric bootstrap methods.
 }
 \usage{
-PBmodcomp(largeModel, smallModel, nsim = 1000, ref = NULL, cl = NULL, details = 0)
-%\method{PBmodcomp}{lm}(largeModel, smallModel, nsim = 1000, ref = NULL, cl = NULL, details = 0)
-%\method{PBmodcomp}{mer}(largeModel, smallModel, nsim = 1000, ref = NULL, cl = NULL, details = 0)
-%\method{PBmodcomp}{lmerMod}(largeModel, smallModel, nsim = 1000, ref = NULL, cl = NULL, details = 0)
+%BCmodcomp(largeModel, smallModel, nsim = 200, ref = NULL, cl = NULL, details = 0)
+%\method{BCmodcomp}{mer}(largeModel, smallModel, nsim = 200, ref = NULL, cl = NULL, details = 0)
+PBmodcomp(largeModel, smallModel, nsim = 200, ref = NULL, cl = NULL, details = 0)
+\method{PBmodcomp}{mer}(largeModel, smallModel, nsim = 200, ref = NULL, cl = NULL, details = 0)
+makePBcluster(n=2)
+stopPBcluster()
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -46,10 +45,10 @@ PBmodcomp(largeModel, smallModel, nsim = 1000, ref = NULL, cl = NULL, details = 
     calculating the reference distribution using several cores. See
     examples below.
   }
-%   \item{n}{
-%     Number of clusters to be used in computations; a typical choice of
-%     \code{n} would be the number of CPUs available.
-%   }
+  \item{n}{
+    Number of clusters to be used in computations; a typical choice of
+    \code{n} would be the number of CPUs available.
+  }
   \item{details}{
     The amount of output produced. Mainly relevant for debugging
     purposes.
@@ -82,7 +81,7 @@ PBmodcomp(largeModel, smallModel, nsim = 1000, ref = NULL, cl = NULL, details = 
 %  ## To be added...
 %}
 \author{
-  Søren Højsgaard \email{sorenh@math.aau.dk}
+  Søren Højsgaard <sorenh at mail dot dk>
 }
 \note{
   This functionality is not thoroughly tested and should be used with
@@ -103,39 +102,11 @@ beet_no.harv <- update(beet0, .~.-harvest)
 PBmodcomp(beet0, beet_no.harv, nsim=20)
 
 \dontrun{
-(fmLarge <- lmer(Reaction ~ Days + (Days|Subject), sleepstudy))
-## removing Days
-(fmSmall <- lmer(Reaction ~ 1 + (Days|Subject), sleepstudy))
-anova(fmLarge, fmSmall)
-PBmodcomp(fmLarge, fmSmall)
-
-## The same test using a restriction matrix
-L<-cbind(0,1)
-PBmodcomp(fmLarge, L)
-
-
 ## Vanilla
-PBmodcomp(beet0, beet_no.harv, nsim=1000)
-
+PBmodcomp(beet0, beet_no.harv)
 ## Simulate reference distribution separately:
-refdist <- PBrefdist(beet0, beet_no.harv, nsim=1000)
-PBmodcomp(beet0, beet_no.harv, ref=refdist)
-
-## Do computations with multiple processors:
-## Number of cores:
-(nc <- detectCores())
-## Create clusters
-cl <- makeCluster(rep("localhost", nc))
-
-## Then do:
-PBmodcomp(beet0, beet_no.harv, cl=cl)
-
-## Or in two steps:
-refdist <- PBrefdist(beet0, beet_no.harv, nsim=1000, cl=cl)
-PBmodcomp(beet0, beet_no.harv, ref=refdist)
-
-## It is recommended to stop the clusters before quitting R:
-stopCluster(cl)
+rr <- PBrefdist(beet0, beet_no.harv, nsim=20)
+PBmodcomp(beet0, beet_no.harv, ref=rr)
 }
 
 }

@@ -1,8 +1,6 @@
 \name{PBrefdist}
 \alias{PBrefdist}
 \alias{PBrefdist.mer}
-\alias{PBrefdist.merMod}
-\alias{PBrefdist.lm}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -13,10 +11,8 @@
     mixed effects models using parametric bootstrap 
 }
 \usage{
-PBrefdist(largeModel, smallModel, nsim = 1000, seed=NULL, cl = NULL, details = 0)
-%\method{PBrefdist}{lm}(largeModel, smallModel, nsim = 1000, seed=NULL, cl = NULL, details = 0)
-%\method{PBrefdist}{mer}(largeModel, smallModel, nsim = 1000, seed=NULL, cl = NULL, details = 0)
-%\method{PBrefdist}{merMod}(largeModel, smallModel, nsim = 1000, seed=NULL, cl = NULL, details = 0)
+PBrefdist(largeModel, smallModel, nsim = 200, cl = NULL, details = 0)
+\method{PBrefdist}{mer}(largeModel, smallModel, nsim = 200, cl = NULL, details = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,9 +28,6 @@ PBrefdist(largeModel, smallModel, nsim = 1000, seed=NULL, cl = NULL, details = 0
   }
   \item{nsim}{
     The number of simulations to form the reference distribution.
-  }
-  \item{seed}{
-    Seed for the random number generation.
   }
   \item{cl}{
     A vector identifying a cluster; used for
@@ -56,7 +49,7 @@ A numeric vector
 %% ~put references to the literature/web site here ~
 %}
 \author{
-  Søren Højsgaard \email{sorenh@math.aau.dk}
+  Søren Højsgaard <sorenh at mail dot dk>
 }
 %\note{
 %%  ~~further notes~~
@@ -67,8 +60,8 @@ A numeric vector
 \seealso{
   \code{\link{PBmodcomp}},
 %  \code{\link{BCmodcomp}},
-%  \code{\link{makePBcluster}},
-%  \code{\link{stopPBcluster}},
+  \code{\link{makePBcluster}},
+  \code{\link{stopPBcluster}},
   \code{\link{KRmodcomp}}
 }
 \examples{
@@ -83,6 +76,7 @@ rr
 
 ## Computations can be made in parallel using several processors:
 \dontrun{
+library(snow)
 cl <- makeSOCKcluster(rep("localhost", 4))
 clusterEvalQ(cl, library(lme4))
 clusterSetupSPRNG(cl)
